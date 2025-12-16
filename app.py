@@ -199,46 +199,19 @@ else:
     text_content = " ".join(df['content'].astype(str))
 
 if text_content:
-    # ==========================================
-    # 1. 智能寻找 Mac 本机中文字体
-    # ==========================================
-    # macOS 不同版本的字体路径不一样，我们需要挨个检查
-    mac_font_candidates = [
-        "/System/Library/Fonts/Supplemental/Arial Unicode.ttf",  # 新版 macOS (Sonoma/Ventura等) 最常用的通用字体
-        "/Library/Fonts/Arial Unicode.ttf",  # 旧版 macOS
-        "/System/Library/Fonts/STHeiti Light.ttc",  # 华文黑体-轻
-        "/System/Library/Fonts/STHeiti Medium.ttc",  # 华文黑体-中
-        "/System/Library/Fonts/PingFang.ttc",  # 苹方 (Mac默认字体)
-    ]
 
-    selected_font_path = None
-
-    # 遍历列表，找到第一个存在的字体文件
-    for font_path in mac_font_candidates:
-        if os.path.exists(font_path):
-            selected_font_path = font_path
-            print(f"✅ 已找到本机字体: {font_path}")  # 在终端打印提示
-            break
-
-    # ==========================================
-    # 2. 生成词云
-    # ==========================================
     try:
+        font_path = 'Arial Unicode.ttf'
+
         wc = WordCloud(
             width=800, height=400,
             background_color='white',
-            # 关键：使用找到的本机路径。如果没找到，传 None (可能会乱码但不会崩)
-            font_path=selected_font_path,
-            margin=2
+            font_path=font_path  # 直接用同级目录下的文件名
         ).generate(text_content)
-
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.imshow(wc, interpolation='bilinear')
         ax.axis('off')
         st.pyplot(fig)
-
-        if selected_font_path is None:
-            st.warning("未找到常见的 Mac 中文字体，词云可能会显示方框。")
 
     except Exception as e:
         st.error(f" 词云生成出错: {e}")
